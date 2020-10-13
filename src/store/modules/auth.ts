@@ -1,5 +1,5 @@
 import { login, whoami, WhoamiResponse } from "@/api"
-import { Module, ActionTree, MutationTree } from "vuex"
+import { Module, ActionTree, MutationTree, GetterTree } from "vuex"
 import { rootState } from "../"
 
 export enum AUTH {
@@ -51,10 +51,15 @@ const mutations: MutationTree<AuthState> = {
   }
 }
 
+const getters: GetterTree<AuthState, rootState> = {
+  loggedIn: state => state.whoami !== null
+}
+
 const store: Module<AuthState, rootState> = {
   state: state(),
   actions,
-  mutations
+  mutations,
+  getters
 }
 
 export default store

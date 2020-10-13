@@ -1,10 +1,12 @@
 import { createStore } from "vuex"
 import authStore, { AuthState } from "./modules/auth"
 import appStore, { AppState } from "./modules/app"
+import instanceStore, { InstanceState } from "./modules/instances"
 
 export type rootState = {
   auth: AuthState,
-  app: AppState
+  app: AppState,
+  instances: InstanceState
 }
 
 const store = createStore({
@@ -12,7 +14,8 @@ const store = createStore({
   state: {} as rootState,
   modules: {
     auth: authStore,
-    app: appStore
+    app: appStore,
+    instances: instanceStore
   }
 })
 

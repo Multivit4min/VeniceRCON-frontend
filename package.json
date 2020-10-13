@@ -9,12 +9,15 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "socket.io-client": "^2.3.1",
     "vue": "^3.0.0",
     "vue-class-component": "^8.0.0-0",
     "vue-router": "^4.0.0-0",
+    "vue-socket.io-extended": "^4.0.5",
     "vuex": "^4.0.0-0"
   },
   "devDependencies": {
+    "@types/socket.io-client": "^1.4.34",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
     "@vue/cli-plugin-babel": "~4.5.0",

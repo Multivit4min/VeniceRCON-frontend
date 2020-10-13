@@ -1,7 +1,5 @@
 import { get, post } from "./api"
 
-
-
 export type LoginPayload = {
   username: string
   password: string

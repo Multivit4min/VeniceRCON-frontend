@@ -1,10 +1,14 @@
 <template>
   <div v-if="initialized">
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/login">Login</router-link>
+      <router-link to="/">Dashboard</router-link> |
+      <router-link v-if="loggedIn" to="/logout">Logout</router-link>
+      <router-link v-else to="/login">Login</router-link>
     </div>
     <router-view/>
+  </div>
+  <div v-else>
+    Loading...
   </div>
 </template>
 
@@ -15,7 +19,8 @@ import { APP } from "./store/modules/app"
 
 export default defineComponent({
   computed: {
-    initialized: () => store.state.app.initialized
+    initialized: () => store.state.app.initialized,
+    loggedIn: () => store.getters.loggedIn
   },
   async mounted() {
     await store.dispatch(APP.INITIALIZE)
@@ -25,7 +30,6 @@ export default defineComponent({
 </script>
 
 <style>
-
 #nav {
   padding: 30px;
 }

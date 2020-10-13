@@ -23,8 +23,12 @@ export function patch() {
   
 }
 
-export function remove() {
-
+export function remove(route: string, params?: Record<string, string>) {
+  return handleResponse(fetch(getRoute(route, params).toString(), {
+    method: "DELETE",
+    headers: defaultHeaders(),
+    credentials: "include",
+  }))
 }
 
 /**
@@ -64,7 +68,8 @@ function defaultHeaders(headers: Record<string, string> = {}) {
  */
 function getRoute(path: string, params: Record<string, string> = {}) {
   if (path.startsWith("/")) path = path.slice(1)
-  const url = new URL(`${store.state.app.apiEndpoint}/api/${path}`)
+  const { app } = store.state
+  const url = new URL(`${app.endpoints[app.endpoint]}/api/${path}`)
   Object.keys(params).forEach(key => {
     url.searchParams.set(key, params[key])
   })

@@ -11,25 +11,19 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component"
+import { Options } from "vue-class-component"
 import store from "./store"
 import { APP } from "./store/modules/app"
+import { VueComponent } from "./util/VueComponent"
 
 @Options({
   computed: {
     initialized: () => store.state.app.initialized
   }
 })
-export default class AppComponent extends Vue {
+export default class AppComponent extends VueComponent {
   async mounted() {
     await store.dispatch(APP.INITIALIZE)
-    this.$store
-    //@ts-ignore
-    this.$toast.add({
-      severity: 'info',
-      summary: 'Sticky Message',
-      detail: 'Message Content'
-    })
   }
 }
 

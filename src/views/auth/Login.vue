@@ -44,11 +44,11 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component"
+import { Options } from "vue-class-component"
 import store from "../../store"
 import { AUTH } from "../../store/modules/auth"
 import { APP } from "../../store/modules/app"
-import router from "../../router"
+import { VueComponent } from "../../util/VueComponent"
 
 
 @Options({
@@ -61,7 +61,7 @@ import router from "../../router"
     selectedEndpoint: () => store.state.app.endpoint
   }
 })
-export default class LoginComponent extends Vue {
+export default class LoginComponent extends VueComponent {
 
   newEndpointLocation: string = ""
   newEndpointName: string = ""
@@ -107,9 +107,14 @@ export default class LoginComponent extends Vue {
         username: this.username,
         password: this.password
       })
-      await router.push("/dashboard")
+      await this.$router.push("/dashboard")
     } catch (e) {
-      console.log("could not log you in!", e)
+      this.$toast.add({
+        severity: "error",
+        detail: "check username and password",
+        summary: "login failed",
+        life: 4000
+      })
     }
   }
 

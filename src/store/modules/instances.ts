@@ -1,30 +1,32 @@
 import { Module, ActionTree, MutationTree, GetterTree } from "vuex"
 import { rootState } from "../"
-import { ChatMessage, Instance } from "@/socket"
+import { ChatMessage, ConsoleEvent, Instance } from "@/socket"
 import { AUTH } from "./auth"
 
 const MESSAGE_LIMIT = 100
 const KILL_LIMIT = 100
+const CONSOLE_LIMIT = 200
 
 export enum INSTANCE {
   ADD = "INSTANCE_ADD",
   DEL = "INSTANCE_DEL",
   UPDATE = "INSTANCE_UPDATE",
   ADD_CHAT = "INSTANCE_ADD_CHAT",
-  ADD_KILL = "INSTANCE_ADD_KILL"
+  ADD_KILL = "INSTANCE_ADD_KILL",
+  ADD_CONSOLE = "INSTANCE_ADD_CONSOLE"
 }
 
 export type InstanceState = {
   instances: Instance[],
   messages: { id: number, messages: ChatMessage[] }[]
-  selected: number
+  console: { id: number, messages: Pick<ConsoleEvent, "type"|"words">[] }[]
 }
 
 function defaultState(): InstanceState {
   return {
     instances: [],
     messages: [],
-    selected: 0
+    console: []
   }
 }
 
@@ -41,6 +43,9 @@ const actions: ActionTree<InstanceState, rootState> = {
   },
   [INSTANCE.ADD_CHAT]({ commit }, { messages }: { messages: ChatMessage[] }) {
     messages.forEach(message => commit(INSTANCE.ADD_CHAT, { message }))
+  },
+  [INSTANCE.ADD_CONSOLE]({ commit }, event: ConsoleEvent) {
+    commit(INSTANCE.ADD_CONSOLE, event)
   }
 }
 
@@ -73,14 +78,22 @@ const mutations: MutationTree<InstanceState> = {
       }
     })
   },
-  [INSTANCE.ADD_CHAT](state, { message }: { message: ChatMessage}) {
+  [INSTANCE.ADD_CHAT](state, { message }: { message: ChatMessage }) {
     const { instance } = message
     const messages = state.messages.find(msg => msg.id === instance)
     if (messages) {
-      messages.messages.push(message)
+      messages.messages = [message, ...messages.messages].slice(0, MESSAGE_LIMIT)
     } else {
-      state.messages.push({ id: instance, messages: [message] })
-      if (state.messages.length > MESSAGE_LIMIT) state.messages.shift()
+      state.messages.unshift({ id: instance, messages: [message] })
+    }
+  },
+  [INSTANCE.ADD_CONSOLE](state, event: ConsoleEvent) {
+    const msgs = state.console.find(c => c.id === event.id)
+    const { type, words } = event
+    if (msgs) {
+      msgs.messages = [{ type, words }, ...msgs.messages].slice(0, CONSOLE_LIMIT)
+    } else {
+      state.console.unshift({ id: event.id, messages: [{ type, words }] })
     }
   }
 }

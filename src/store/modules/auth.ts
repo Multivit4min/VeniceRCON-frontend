@@ -25,13 +25,9 @@ function defaultState(): AuthState {
 const actions: ActionTree<AuthState, rootState> = {
   /** tries to login to a different account */
   async [AUTH.LOGIN]({ dispatch, commit }, payload) {
-    try {
-      const { token } = await login(payload)
-      commit("updateToken", token)
-      await dispatch(AUTH.WHOAMI)
-    } catch (e) {
-      commit(APP.MESSAGE, { type: "error", content: `login failed: ${e.message}` })
-    }
+    const { token } = await login(payload)
+    commit("updateToken", token)
+    await dispatch(AUTH.WHOAMI)
   },
   /** retrieves informations about the currently used user */
   async [AUTH.WHOAMI](context) {

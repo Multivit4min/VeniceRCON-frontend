@@ -3,7 +3,10 @@ import store from "../store"
 import { INSTANCE } from '@/store/modules/instances'
 import { AUTH } from '@/store/modules/auth'
 
-export let socket = io(store.getters.apiEndpointUrl, { autoConnect: false })
+export let socket = io(store.getters.apiEndpointUrl, {
+  autoConnect: false,
+  transports: ["websocket"]
+})
 
 store.watch((state, getters) => getters.loggedIn, loggedIn => {
   if (loggedIn) return connect()
@@ -122,6 +125,16 @@ socket.on("INSTANCE#KILL", (event: any) => {
 
 socket.on("INSTANCE#LOG", (event: any) => {
   console.log("INSTANCE#LOG", event)
+})
+
+export interface ConsoleEvent {
+  id: number
+  type: "send"|"receive",
+  words: string[]
+}
+
+socket.on("INSTANCE#CONSOLE", (event: ConsoleEvent) => {
+  store.dispatch(INSTANCE.ADD_CONSOLE, event)
 })
 
 socket.on("SELF#PERMISSION_UPDATE", () => {

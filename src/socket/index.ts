@@ -113,7 +113,6 @@ export interface ChatMessageEvent {
 }
 
 socket.on("INSTANCE#CHAT", (event: ChatMessageEvent) => {
-  console.log("INSTANCE#CHAT", event)
   store.dispatch(INSTANCE.ADD_CHAT, { messages: event.messages })
 })
 

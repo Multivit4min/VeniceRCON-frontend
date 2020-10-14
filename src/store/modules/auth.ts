@@ -1,6 +1,7 @@
 import { login, whoami, WhoamiResponse } from "@/api"
 import { Module, ActionTree, MutationTree, GetterTree } from "vuex"
 import { rootState } from "../"
+import { APP } from './app'
 
 export enum AUTH {
   LOGIN = "AUTH_LOGIN",
@@ -13,18 +14,24 @@ export type AuthState = {
   whoami: WhoamiResponse|null
 }
 
-const state = () => ({
-  token: localStorage.getItem("jwt") || null,
-  whoami: null
-} as AuthState)
+function defaultState(): AuthState {
+  return {
+    token: localStorage.getItem("jwt") || null,
+    whoami: null
+  }
+}
 
 
 const actions: ActionTree<AuthState, rootState> = {
   /** tries to login to a different account */
   async [AUTH.LOGIN]({ dispatch, commit }, payload) {
-    const { token } = await login(payload)
-    commit("updateToken", token)
-    await dispatch(AUTH.WHOAMI)
+    try {
+      const { token } = await login(payload)
+      commit("updateToken", token)
+      await dispatch(AUTH.WHOAMI)
+    } catch (e) {
+      commit(APP.MESSAGE, { type: "error", content: `login failed: ${e.message}` })
+    }
   },
   /** retrieves informations about the currently used user */
   async [AUTH.WHOAMI](context) {
@@ -32,7 +39,7 @@ const actions: ActionTree<AuthState, rootState> = {
   },
   /** resets the store */
   [AUTH.LOGOUT]({ commit }) {
-    commit("reset")
+    commit(AUTH.LOGOUT)
   }
 }
 
@@ -44,10 +51,9 @@ const mutations: MutationTree<AuthState> = {
   updateWhoami(state, response: WhoamiResponse) {
     state.whoami = response
   },
-  reset(state) {
+  [AUTH.LOGOUT](state) {
     localStorage.removeItem("jwt")
-    state.whoami = null
-    state.token = null
+    Object.assign(state, defaultState())
   }
 }
 
@@ -56,7 +62,7 @@ const getters: GetterTree<AuthState, rootState> = {
 }
 
 const store: Module<AuthState, rootState> = {
-  state: state(),
+  state: defaultState(),
   actions,
   mutations,
   getters

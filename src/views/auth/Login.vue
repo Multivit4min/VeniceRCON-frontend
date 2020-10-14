@@ -47,7 +47,7 @@
 import { Options, Vue } from "vue-class-component"
 import store from "../../store"
 import { AUTH } from "../../store/modules/auth"
-import { APP, APPMUTATE } from "../../store/modules/app"
+import { APP } from "../../store/modules/app"
 import router from "../../router"
 
 
@@ -69,6 +69,7 @@ export default class LoginComponent extends Vue {
   username: string = "admin"
   password: string = ""
 
+  /** checks if the endpoint provided is a valid endpoint */
   async testEndpoint() {
     const res = await fetch(this.getApiLocation(this.newEndpointLocation))
     const data = await res.json()
@@ -76,6 +77,7 @@ export default class LoginComponent extends Vue {
       throw new Error("invalid response received from endpoint")
   }
 
+  /** parses the url string and tries to fetch the correct api endpoint url */
   private getApiLocation(endpoint: string) {
     if (endpoint.endsWith("/")) endpoint = endpoint.slice(0, -1)
     if (endpoint.endsWith("/api")) return endpoint
@@ -85,12 +87,12 @@ export default class LoginComponent extends Vue {
   updateEndpoint(event: InputEvent) {
     if (!event.target) return
     //@ts-ignore
-    store.commit(APPMUTATE.SET_ENDPOINT, { name: event.target.value })
+    store.commit(APP.SELECT_ENDPOINT, { name: event.target.value })
   }
 
   async addEndpoint() {
     await this.testEndpoint()
-    store.dispatch(APP.ADDLOCATION, {
+    store.dispatch(APP.ADD_LOCATION, {
       name: this.newEndpointName,
       location: this.newEndpointLocation
     })
@@ -105,7 +107,7 @@ export default class LoginComponent extends Vue {
         username: this.username,
         password: this.password
       })
-      await router.push("/")
+      await router.push("/dashboard")
     } catch (e) {
       console.log("could not log you in!", e)
     }

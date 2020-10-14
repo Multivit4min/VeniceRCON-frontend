@@ -1,38 +1,28 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw, RouteLocationNormalized, NavigationGuardNext } from "vue-router"
-import Dashboard from "../views/Dashboard.vue"
+import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router"
+import Main from "../views/main/Main.vue"
+import Dashboard from "../views/main/Dashboard.vue"
+import Instance from "../views/main/Instance.vue"
 import Logout from "../views/auth/Logout.vue"
 import Login from "../views/auth/Login.vue"
 import store from '@/store'
 
-/**
- * checks if the user is logged in or not and redirects him to a specified route
- * @param redirect redirect if stuff goes wrong
- * @param requireLoggedIn wther the user should be logged in or not
- */
-function loggedInGuard(redirect: string, requireLoggedIn: boolean = true) {
-  return (
-    to: RouteLocationNormalized,
-    from: RouteLocationNormalized,
-    next: NavigationGuardNext
-  ) => {
-    if (requireLoggedIn) {
-      store.getters.loggedIn ? next() : next(redirect)
-    } else {
-      store.getters.loggedIn ? next(redirect) : next()
-    }
-  }
-}
-
 const routes: RouteRecordRaw[] = [{
     path: "/",
+    name: "Main",
+    component: Main,
+    children: [{
+     path: "/:instanceId",
+     name: "Instance" ,
+     component: Instance
+    }]
+  }, {
+    path: "/dashboard",
     name: "Dashboard",
-    component: Dashboard,
-    beforeEnter: loggedInGuard("/login")
+    component: Dashboard
   }, {
     path: "/login",
     name: "Login",
     component: Login,
-    beforeEnter: loggedInGuard("/", false)
   }, {
     path: "/logout",
     name: "Logout",
@@ -44,5 +34,24 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes
 })
+
+router.beforeEach(async (to, from, next) => {
+  await waitInitialized()
+  if (to.name === "Login" && store.getters.loggedIn) return next({ path: "/" })
+  if (to.name !== "Login" && !store.getters.loggedIn) return next({ path: "/login" })
+  next()
+})
+
+function waitInitialized() {
+  if (store.state.app.initialized) return Promise.resolve()
+  return new Promise(fulfill => {
+    if (store.state.app.initialized) return fulfill()
+    const unsubscribe = store.watch(state => state.app.initialized, init => {
+      if (!init) return
+      unsubscribe()
+      fulfill()
+    })
+  })
+}
 
 export default router

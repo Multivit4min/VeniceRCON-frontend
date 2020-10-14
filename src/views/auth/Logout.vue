@@ -1,6 +1,7 @@
 <template>
   <div>
     You have been logged out!
+    <router-link to="/login">Goto Login</router-link>
   </div>
 </template>
 

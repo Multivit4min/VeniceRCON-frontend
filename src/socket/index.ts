@@ -3,7 +3,7 @@ import store from "../store"
 import { INSTANCE } from '@/store/modules/instances'
 import { AUTH } from '@/store/modules/auth'
 
-export let socket = io(store.getters.apiEndpointUrl, {
+export const socket = io(store.getters.apiEndpointUrl, {
   autoConnect: false,
   transports: ["websocket"]
 })

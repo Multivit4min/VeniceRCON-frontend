@@ -12,7 +12,7 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "typeRoots": [],
+    "typeRoots": ["@types"],
     "types": [
       "webpack-env"
     ],

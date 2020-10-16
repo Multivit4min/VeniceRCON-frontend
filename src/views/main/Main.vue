@@ -11,16 +11,13 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component"
-import store from "../../store"
+import { defineComponent } from "vue"
+import store from "../../services/store"
 
-@Options({
+export default defineComponent({
   computed: {
     loggedIn: () => store.getters.loggedIn,
     whoami: () => store.state.auth.whoami
   }
 })
-export default class MainComponent extends Vue {
-
-}
 </script>

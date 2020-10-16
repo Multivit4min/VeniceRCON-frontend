@@ -11,20 +11,17 @@
 </template>
 
 <script lang="ts">
-import { Options } from "vue-class-component"
-import store from "./store"
-import { APP } from "./store/modules/app"
-import { VueComponent } from "./util/VueComponent"
+import { defineComponent } from "vue"
+import store from "./services/store"
+import { APP } from "./services/store/modules/app"
 
-@Options({
+export default defineComponent({
   computed: {
     initialized: () => store.state.app.initialized
-  }
-})
-export default class AppComponent extends VueComponent {
+  },
   async mounted() {
     await store.dispatch(APP.INITIALIZE)
   }
-}
+})
 
 </script>

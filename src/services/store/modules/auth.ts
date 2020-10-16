@@ -1,7 +1,6 @@
-import { login, whoami, WhoamiResponse } from "@/api"
+import { login, whoami, WhoamiResponse } from "../../api"
 import { Module, ActionTree, MutationTree, GetterTree } from "vuex"
 import { rootState } from "../"
-import { APP } from './app'
 
 export enum AUTH {
   LOGIN = "AUTH_LOGIN",
@@ -54,7 +53,15 @@ const mutations: MutationTree<AuthState> = {
 }
 
 const getters: GetterTree<AuthState, rootState> = {
-  loggedIn: state => state.whoami !== null
+  loggedIn: state => state.whoami !== null,
+  hasPermission: state => (id: number|false, scope: string) => {
+    if (!state.whoami) return false
+    return state.whoami.permissions.some(node => {
+      if ((id === false && node.root) || node.instance === id) {
+        return node.scopes.includes(scope)
+      }
+    })
+  }
 }
 
 const store: Module<AuthState, rootState> = {

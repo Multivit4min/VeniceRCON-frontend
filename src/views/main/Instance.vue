@@ -1,36 +1,32 @@
 <template>
   <div>
     <h3>Instance</h3>
-    <Console :instanceId="instanceId" />
+    <Console :instanceId="instanceId" :height="40" />
     <pre>{{JSON.stringify(instance, null, 2)}}</pre>
   </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component"
-import store from "../../store"
-import router from "../../router"
+import { defineComponent } from "vue"
+import store from "../../services/store"
+import router from "../../services/router"
 import Console from "../../components/Console.vue"
 
-@Options({
+export default defineComponent({
   computed: {
-    instance: () => store.state.instances.instances.find(instance => {
+    instanceId() {
       const id = router.currentRoute.value.params.instanceId
-      if (typeof id !== "string") return router.push("/dashboard")
-      return instance.id === parseInt(id, 10)
-    })
+      if (typeof id !== "string") return 0
+      return parseInt(id, 10)
+    },
+    instance() {
+      return store.state.instances.instances
+        //@ts-ignore
+        .find(instance => instance.id === this.instanceId)
+    }
   },
   components: {
     Console
   }
 })
-export default class InstanceComponent extends Vue {
-
-  get instanceId() {
-    const id = router.currentRoute.value.params.instanceId
-    if (typeof id !== "string") return 0
-    return parseInt(id, 10)
-  }
-
-}
 </script>

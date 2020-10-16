@@ -6,20 +6,18 @@
 </template>
 
 <script lang="ts">
-import { Vue } from "vue-class-component"
-import store from "../../store"
-import { AUTH } from "../../store/modules/auth"
+import { defineComponent } from "vue"
+import store from "../../services/store"
+import { AUTH } from "../../services/store/modules/auth"
 
-
-export default class LoginComponent extends Vue {
-
+export default defineComponent({
   async mounted() {
     await this.logout()
+  },
+  methods: {
+    async logout() {
+      await store.dispatch(AUTH.LOGOUT)
+    }
   }
-
-  async logout() {
-    await store.dispatch(AUTH.LOGOUT)
-  }
-
-}
+})
 </script>

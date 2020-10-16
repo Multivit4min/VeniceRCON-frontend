@@ -8,19 +8,30 @@ export function get(route: string, params?: Record<string, string>) {
   }))
 }
 
-export function post(route: string, body: any, params?: Record<string, string>) {
+export function post(route: string, body?: any, params?: Record<string, string>) {
   return handleResponse(fetch(getRoute(route, params).toString(), {
     method: "POST",
     body: JSON.stringify(body),
-    headers: defaultHeaders({
-      "Content-Type": "application/json"
+    headers: defaultHeaders(() => {
+      const headers: Record<string, string> = {}
+      if (body) headers["Content-Type"] = "application/json"
+      return headers
     }),
     credentials: "include",
   }))
 }
 
-export function patch() {
-  
+export function patch(route: string, body?: any, params?: Record<string, string>) {
+  return handleResponse(fetch(getRoute(route, params).toString(), {
+    method: "PATCH",
+    body: JSON.stringify(body),
+    headers: defaultHeaders(() => {
+      const headers: Record<string, string> = {}
+      if (body) headers["Content-Type"] = "application/json"
+      return headers
+    }),
+    credentials: "include",
+  }))
 }
 
 export function remove(route: string, params?: Record<string, string>) {
@@ -51,10 +62,11 @@ async function handleResponse(response: Promise<Response>) {
  * applies some default headers to each request
  * @param headers preset headers which should be included
  */
-function defaultHeaders(headers: Record<string, string> = {}) {
+function defaultHeaders(headers: Record<string, string>|(() => Record<string, string>) = {}) {
   const defaults: Record<string, string> = {}
   const { token } = store.state.auth
   if (token) defaults["Authorization"] = `Bearer ${token}`
+  if (typeof headers === "function") headers = headers()
   return {
     ...headers,
     ...defaults

@@ -1,8 +1,8 @@
 import { createApp } from "vue"
 import App from "./App.vue"
-import router from "./router"
-import store from "./store"
-import "./socket"
+import router from "./services/router"
+import store from "./services/store"
+import "./services/socket"
 
 import "primeflex/primeflex.css"
 import "primevue/resources/themes/bootstrap4-light-blue/theme.css"

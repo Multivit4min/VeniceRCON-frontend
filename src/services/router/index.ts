@@ -1,10 +1,10 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router"
-import Main from "../views/main/Main.vue"
-import Dashboard from "../views/main/Dashboard.vue"
-import Instance from "../views/main/Instance.vue"
-import Logout from "../views/auth/Logout.vue"
-import Login from "../views/auth/Login.vue"
-import store from '@/store'
+import Main from "../../views/main/Main.vue"
+import Dashboard from "../../views/main/Dashboard.vue"
+import Instance from "../../views/main/Instance.vue"
+import Logout from "../../views/auth/Logout.vue"
+import Login from "../../views/auth/Login.vue"
+import store from "../store"
 
 const routes: RouteRecordRaw[] = [{
     path: "/",

@@ -44,79 +44,71 @@
 </template>
 
 <script lang="ts">
-import { Options } from "vue-class-component"
-import store from "../../store"
-import { AUTH } from "../../store/modules/auth"
-import { APP } from "../../store/modules/app"
-import { VueComponent } from "../../util/VueComponent"
+import { defineComponent } from "vue"
+import store from "../../services/store"
+import { AUTH } from "../../services/store/modules/auth"
+import { APP } from "../../services/store/modules/app"
 
-
-@Options({
-  props: {
-    username: String,
-    password: String
+export default defineComponent({
+  data() {
+    return {
+      newEndpointLocation: "",
+      newEndpointName: "",
+      createEndpoint: false,
+      username: "admin",
+      password: ""
+    }
   },
   computed: {
     endpoints: () => store.state.app.endpoints,
     selectedEndpoint: () => store.state.app.endpoint
-  }
-})
-export default class LoginComponent extends VueComponent {
-
-  newEndpointLocation: string = ""
-  newEndpointName: string = ""
-  createEndpoint: boolean = false
-  username: string = "admin"
-  password: string = ""
-
-  /** checks if the endpoint provided is a valid endpoint */
-  async testEndpoint() {
-    const res = await fetch(this.getApiLocation(this.newEndpointLocation))
-    const data = await res.json()
-    if (typeof data !== "object" || data.name !== "VeniceRCON-api")
-      throw new Error("invalid response received from endpoint")
-  }
-
-  /** parses the url string and tries to fetch the correct api endpoint url */
-  private getApiLocation(endpoint: string) {
-    if (endpoint.endsWith("/")) endpoint = endpoint.slice(0, -1)
-    if (endpoint.endsWith("/api")) return endpoint
-    return `${endpoint}/api`
-  }
-
-  updateEndpoint(event: InputEvent) {
-    if (!event.target) return
-    //@ts-ignore
-    store.commit(APP.SELECT_ENDPOINT, { name: event.target.value })
-  }
-
-  async addEndpoint() {
-    await this.testEndpoint()
-    store.dispatch(APP.ADD_LOCATION, {
-      name: this.newEndpointName,
-      location: this.newEndpointLocation
-    })
-    this.newEndpointLocation = ""
-    this.newEndpointName = ""
-    this.createEndpoint = false
-  }
-
-  async login() {
-    try {
-      await store.dispatch(AUTH.LOGIN, {
-        username: this.username,
-        password: this.password
+  },
+  methods: {
+    /** checks if the endpoint provided is a valid endpoint */
+    async testEndpoint() {
+      const res = await fetch(this.getApiLocation(this.newEndpointLocation))
+      const data = await res.json()
+      if (typeof data !== "object" || data.name !== "VeniceRCON-api")
+        throw new Error("invalid response received from endpoint")
+    },
+    /** parses the url string and tries to fetch the correct api endpoint url */
+    getApiLocation(endpoint: string) {
+      if (endpoint.endsWith("/")) endpoint = endpoint.slice(0, -1)
+      if (endpoint.endsWith("/api")) return endpoint
+      return `${endpoint}/api`
+    },
+    updateEndpoint(event: InputEvent) {
+      if (!event.target) return
+      //@ts-ignore
+      store.commit(APP.SELECT_ENDPOINT, { name: event.target.value })
+    },
+    async addEndpoint() {
+      await this.testEndpoint()
+      store.dispatch(APP.ADD_LOCATION, {
+        name: this.newEndpointName,
+        location: this.newEndpointLocation
       })
-      await this.$router.push("/dashboard")
-    } catch (e) {
-      this.$toast.add({
-        severity: "error",
-        detail: "check username and password",
-        summary: "login failed",
-        life: 4000
-      })
+      this.newEndpointLocation = ""
+      this.newEndpointName = ""
+      this.createEndpoint = false
+    },
+    async login() {
+      try {
+        await store.dispatch(AUTH.LOGIN, {
+          username: this.username,
+          password: this.password
+        })
+        await this.$router.push("/dashboard")
+      } catch (e) {
+        //@ts-ignore
+        this.$toast.add({
+          severity: "error",
+          detail: "check username and password",
+          summary: "login failed",
+          life: 4000
+        })
+      }
     }
   }
-
-}
+})
 </script>

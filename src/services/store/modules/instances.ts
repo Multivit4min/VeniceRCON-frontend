@@ -1,6 +1,7 @@
 import { Module, ActionTree, MutationTree, GetterTree } from "vuex"
 import { rootState } from "../"
-import { ChatMessage, ConsoleEvent, Instance } from "@/socket"
+import { ChatMessage, ConsoleEvent } from "../../socket"
+import { Instance } from "../../../types/Instance"
 import { AUTH } from "./auth"
 
 const MESSAGE_LIMIT = 100
@@ -99,6 +100,28 @@ const mutations: MutationTree<InstanceState> = {
 }
 
 const getters: GetterTree<InstanceState, rootState> = {
+  getInstance(state) {
+    return (id: number) => {
+      const instance = state.instances.find(instance => instance.id === id)
+      if (!instance) throw new Error(`could not find instance with id ${id}!`)
+      return instance
+    }
+  },
+  getInstanceState(state, getters) {
+    return (id: number) => {
+      const instance = getters.getInstance(id)
+      switch (instance.state) {
+        default:
+        case 0: return "Unknown"
+        case 1: return "Connecting"
+        case 2: return "Connected"
+        case 3: return "Disconnecting"
+        case 4: return "Disconnected"
+        case 5: return "Reconnecting"
+      }
+    }
+  }
+
 }
 
 const store: Module<InstanceState, rootState> = {

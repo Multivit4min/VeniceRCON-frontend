@@ -3,6 +3,8 @@ import store from "../store"
 import { INSTANCE } from "../store/modules/instances"
 import { AUTH } from "../store/modules/auth"
 import { Instance } from "../../types/Instance"
+//@ts-ignore
+import { useToast } from "primevue/usetoast"
 
 export const socket = io(store.getters.apiEndpointUrl, {
   autoConnect: false,
@@ -80,7 +82,27 @@ socket.on("INSTANCE#KILL", (event: any) => {
   console.log("INSTANCE#KILL", event)
 })
 
-socket.on("INSTANCE#LOG", (event: any) => {
+export interface InstanceLogEvent {
+  messages: {
+    created: string
+    instanceId: number
+    level: string
+    message: string
+    source: number
+    sourceLocation: string|null
+  }[]
+}
+
+socket.on("INSTANCE#LOG", (event: InstanceLogEvent) => {
+  const toast = useToast()
+  event.messages.forEach(({ level, instanceId, message }) => {
+    toast.add({
+      severity: level,
+      detail: message,
+      summary: `from ${instanceId}`,
+      life: 4000
+    })
+  })
   console.log("INSTANCE#LOG", event)
 })
 

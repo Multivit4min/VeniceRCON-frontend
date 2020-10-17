@@ -21,7 +21,8 @@ app.component("Toast", Toast)
 app.component("Card", Card)
 app.component("Button", Button)
 
-app.use(store)
+app
+  .use(store)
   .use(router)
   .use(ToastService)
   .mount("#app")

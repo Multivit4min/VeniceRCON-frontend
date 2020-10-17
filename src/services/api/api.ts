@@ -1,4 +1,7 @@
 import store from "../store"
+//@ts-ignore
+import { useToast } from "primevue/usetoast"
+import { ErrorCodes } from 'vue'
 
 export function get(route: string, params?: Record<string, string>) {
   return handleResponse(fetch(getRoute(route, params).toString(), {
@@ -47,15 +50,32 @@ export function remove(route: string, params?: Record<string, string>) {
  * @param response fetch response
  */
 async function handleResponse(response: Promise<Response>) {
-  const res = await response
-  if (res.status > 299 || res.status < 200) {
-    const error = <any>new Error(`${res.statusText} (${res.status})`)
-    error.status = res.status
-    error.statusText = res.statusText
-    if (res.headers.get("Content-Type") === "application/json") error.body = await res.json()
+  try {
+    const res = await response
+    if (res.status > 299 || res.status < 200) {
+      const error = <any>new Error(`${res.statusText} (${res.status})`)
+      error.status = res.status
+      error.statusText = res.statusText
+      if (res.headers.get("Content-Type") === "application/json") error.body = await res.json()
+      useToast().add({
+        severity: "error",
+        detail: (error.body && error.body.message) ? error.body.message : error.message,
+        summary: `HTTP Error`,
+        life: 4000
+      })
+      throw error
+    }
+    return res
+  } catch (error) {
+    console.log(error)
+    useToast().add({
+      severity: "error",
+      detail: error.message,
+      summary: `HTTP Error`,
+      life: 4000
+    })
     throw error
   }
-  return res
 }
 
 /**

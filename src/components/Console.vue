@@ -1,6 +1,6 @@
 <template>
   <div class="terminal" :style="`height:${height}vh`">
-    <pre class="content"><template v-for="message in terminal">{{`${message.prefix} ${message.words.join(" ")}\n`}}</template></pre>
+    <pre class="content"><template v-for="message in terminal">{{`${message.prefix}${message.words.join(" ")}\n`}}</template></pre>
   </div>
 </template>
 
@@ -20,7 +20,7 @@ export default defineComponent({
       if (!data) return []
       const messages = [...data.messages].reverse()
       return messages.map(({ type, words }) => ({
-        prefix: type === "receive" ? "<" : ">", words
+        prefix: type === "receive" ? "" : "$> ", words
       }))
     }
   }

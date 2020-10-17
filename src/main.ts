@@ -15,7 +15,7 @@ import Toast from "primevue/toast"
 import Card from "primevue/card"
 import Button from "primevue/button"
 
-const app = createApp(App)
+export const app = createApp(App)
 
 app.component("Toast", Toast)
 app.component("Card", Card)

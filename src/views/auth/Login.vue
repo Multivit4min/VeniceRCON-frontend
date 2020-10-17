@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form class="login">
+    <form class="login" @submit.prevent>
       <div>
         <label for="createEndpoint">create api endpoint?</label>
         <input type="checkbox" v-model="createEndpoint" id="createEndpoint">
@@ -32,7 +32,7 @@
       </div>
       <div>
         <label for="username">Username:</label>
-        <input type="text" v-model="username" id="username">
+        <input type="text" autofocus v-model="username" id="username">
       </div>
       <div>
         <label for="password">Password:</label>

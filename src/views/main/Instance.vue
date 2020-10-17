@@ -1,7 +1,7 @@
 <template>
   <div>
+    <AppMenu />
     <h3>Instance</h3>
-    <Console :instanceId="instanceId" :height="40" />
     <pre>{{JSON.stringify(instance, null, 2)}}</pre>
   </div>
 </template>
@@ -10,7 +10,7 @@
 import { defineComponent } from "vue"
 import store from "../../services/store"
 import router from "../../services/router"
-import Console from "../../components/Console.vue"
+import AppMenu from "../../components/AppMenu.vue"
 
 export default defineComponent({
   computed: {
@@ -26,7 +26,7 @@ export default defineComponent({
     }
   },
   components: {
-    Console
+    AppMenu
   }
 })
 </script>

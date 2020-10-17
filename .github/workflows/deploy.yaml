@@ -21,7 +21,6 @@ jobs:
     - name: build vue app
       run: |
         npm run build
-    - name: 
     - name: Deploy on Github Pages
       uses: JamesIves/github-pages-deploy-action@releases/v3
       if: github.ref == 'refs/heads/master'

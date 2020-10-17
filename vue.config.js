@@ -1,4 +1,7 @@
 module.exports = {
+  publicPath: process.env.GITHUB_ACTIONS ?
+    `/${process.env.GITHUB_REPOSITORY.split("/")[1]}` :
+    "/",
   devServer: {
     disableHostCheck: true,
     proxy: {

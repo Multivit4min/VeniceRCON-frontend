@@ -1,7 +1,7 @@
 <template>
 <Card class="p-shadow-5">
   <template #header>
-    <img :alt="instance.serverinfo.map" src="@/assets/images/battlefield3.png">
+    <img :alt="instance.serverinfo.map" :src="`https://eaassets-a.akamaihd.net/bl-cdn/cdnprefix/production-284-20170531/public/base/bf3/map_images/992x164/${instance.serverinfo.map.toLowerCase()}.jpg`">
   </template>
   <template #title>
     {{instance.serverinfo.name}}

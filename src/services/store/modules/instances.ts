@@ -59,7 +59,7 @@ const mutations: MutationTree<InstanceState> = {
     state.instances.push(instance)
   },
   [INSTANCE.DEL](state, { id }) {
-    state.instances = state.instances.filter(instance => instance.id === id)
+    state.instances = state.instances.filter(instance => instance.id !== id)
   },
   [INSTANCE.UPDATE](state, { id, change }) {
     const instance = state.instances.find(instance => instance.id === id)

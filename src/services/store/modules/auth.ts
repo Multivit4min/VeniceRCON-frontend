@@ -54,12 +54,11 @@ const mutations: MutationTree<AuthState> = {
 
 const getters: GetterTree<AuthState, rootState> = {
   loggedIn: state => state.whoami !== null,
-  hasPermission: state => (id: number|false, scope: string) => {
+  hasPermission: state => (id: number|undefined, scope: string) => {
     if (!state.whoami) return false
     return state.whoami.permissions.some(node => {
-      if ((id === false && node.root) || node.instance === id) {
+      if (node.root || node.instance === id)
         return node.scopes.includes(scope)
-      }
     })
   }
 }

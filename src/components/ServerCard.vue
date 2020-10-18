@@ -27,36 +27,53 @@
       <router-link :to="{ name: 'Instance', params: { instanceId: instance.id }}" style="text-decoration:none" >
         <Button icon="pi pi-check" label="Select" />
       </router-link>
-      <ConfirmAction
-        :open="confirmStop"
-        message="Are you sure that you want to stop the Instance?"
-        :onClose="stop"
-      />
-      <Button
-        v-if="instance.state === 2"
-        icon="pi pi-power-off"
-        label="Stop"
-        class="p-button-danger"
-        style="margin-left: .5em"
-        :disabled="hasPermission('INSTANCE#MODIFY')"
-        @click="confirmStop = true"
-      />
-      <Button
-        v-if="instance.state === 4"
-        icon="pi pi-play"
-        label="Start"
-        class="p-button-success"
-        style="margin-left: .5em"
-        :disabled="hasPermission('INSTANCE#MODIFY')"
-        @click="start()"
-      />
-      <Button
-        v-if="![2, 4].includes(instance.state)"
-        :label="currentState"
-        disabled
-        class="p-button-warning"
-        style="margin-left: .5em"
-      />
+      <PermissionCheck :instance="instanceId" scopes="INSTANCE#UPDATE">
+        <ConfirmAction
+          :open="confirmStop"
+          message="Are you sure that you want to stop the Instance?"
+          :onClose="stop"
+        />
+        <Button
+          v-if="instance.state === 2"
+          icon="pi pi-power-off"
+          label="Stop"
+          class="p-button-danger"
+          style="margin-left: .5em"
+          @click="confirmStop = true"
+        />
+      </PermissionCheck>
+      <PermissionCheck :instance="instanceId" scopes="INSTANCE#UPDATE">
+        <Button
+          v-if="instance.state === 4"
+          icon="pi pi-play"
+          label="Start"
+          class="p-button-success"
+          style="margin-left: .5em"
+          @click="start()"
+        />
+      </PermissionCheck>
+      <PermissionCheck :instance="instanceId" scopes="INSTANCE#UPDATE">
+        <Button
+          v-if="![2, 4].includes(instance.state)"
+          :label="currentState"
+          disabled
+          class="p-button-warning"
+          style="margin-left: .5em"
+        />
+      </PermissionCheck>
+      <PermissionCheck :instance="instanceId" scopes="INSTANCE#DELETE">
+        <ConfirmAction
+          :open="confirmDelete"
+          :message="`Delete '${instance.serverinfo.name}'?`"
+          :onClose="removeInstance"
+        />
+        <Button
+          icon="pi pi-trash"
+          @click="confirmDelete = true"
+          class="p-button-danger"
+          style="margin-left: .5em"
+        />
+      </PermissionCheck>
   </template>
 </Card>
 </template>
@@ -64,7 +81,7 @@
 
 <script lang="ts">
 import { PropType, defineComponent } from "vue"
-import { start, stop } from "../services/api/instance"
+import { deleteInstance, start, stop } from "../services/api/instance"
 import store from "../services/store"
 import { Instance } from "../types/Instance"
 import { translate } from "../services/battlefield/map"
@@ -79,7 +96,8 @@ export default defineComponent({
     }
   },
   data: () => ({
-    confirmStop: false
+    confirmStop: false,
+    confirmDelete: false
   }),
   components: {
     ConfirmAction
@@ -106,6 +124,10 @@ export default defineComponent({
     },
     start() {
       return start(this.instanceId)
+    },
+    removeInstance(confirm: boolean) {
+      this.confirmDelete = false
+      if (confirm) deleteInstance(this.instanceId)
     }
   }
 })

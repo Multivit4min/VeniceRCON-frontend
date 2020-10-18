@@ -1,7 +1,10 @@
 <template>
-<Card class="p-shadow-5">
+<Card class="p-shadow-10">
   <template #header>
-    <img :alt="instance.serverinfo.map" :src="`https://eaassets-a.akamaihd.net/bl-cdn/cdnprefix/production-284-20170531/public/base/bf3/map_images/992x164/${instance.serverinfo.map.toLowerCase()}.jpg`">
+    <img
+      :alt="instance.serverinfo.map"
+      :src="mapThumbnail"
+    />
   </template>
   <template #title>
     {{instance.serverinfo.name}}
@@ -104,14 +107,19 @@ export default defineComponent({
   },
   computed: {
     instanceId(): number {
-      //@ts-ignore
       return this.instance.id
+    },
+    mapThumbnail(): string {
+      return require(`../assets/images/maps/${this.mapId.toLowerCase()}.jpg`)
     },
     currentState() {
       return store.getters.getInstanceState(this.instanceId)
     },
     hasPermission() {
       return (scope: string) => store.getters.hasPermission(this.instanceId, scope)
+    },
+    mapId(): string {
+      return this.instance.serverinfo.map
     },
     mapName() {
       return translate

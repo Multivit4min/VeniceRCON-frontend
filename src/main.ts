@@ -19,7 +19,8 @@ import Button from "primevue/button"
 import SplitButton from "primevue/splitbutton"
 import InputNumber from "primevue/inputnumber"
 import InputText from "primevue/inputtext"
-import InputSwitch from "primevue/inputswitch"
+import Dropdown from "primevue/dropdown"
+import Dialog from "primevue/dialog"
 
 export const app = createApp(App)
 
@@ -29,7 +30,8 @@ app.component("Button", Button)
 app.component("SplitButton", SplitButton)
 app.component("InputNumber", InputNumber)
 app.component("InputText", InputText)
-app.component("InputSwitch", InputSwitch)
+app.component("Dropdown", Dropdown)
+app.component("Dialog", Dialog)
 app.component("PermissionCheck", PermissionCheck)
 
 app

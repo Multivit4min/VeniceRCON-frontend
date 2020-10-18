@@ -2,6 +2,8 @@ import { Module, ActionTree, MutationTree, GetterTree } from "vuex"
 import type { rootState } from "../"
 import { AUTH } from './auth'
 
+const DEFAULT_ENDPOINT = "http://localhost:8000"
+
 export enum APP {
   INITIALIZE = "APP_INITIALIZE",
   ADD_LOCATION = "APP_ADD_LOCATION",
@@ -10,12 +12,10 @@ export enum APP {
   MESSAGE = "APP_MESSAGE"
 }
 
-export const DEFAULT_ENDPOINT = "default"
-
 export type AppState = {
   initialized: boolean
-  endpoints: Record<string, string>
-  endpoint: string
+  endpoints: string[]
+  endpoint: number
   message: {
     type: string
     content: string
@@ -24,8 +24,8 @@ export type AppState = {
 
 function getEndpoints(): Pick<AppState, "endpoint"|"endpoints"> {
   const store = localStorage.getItem("endpoints")
-  const endpoints = store ? JSON.parse(store) : { [DEFAULT_ENDPOINT]: "http://localhost:8000" }
-  const endpoint = localStorage.getItem("endpoint") || DEFAULT_ENDPOINT
+  const endpoints = store ? JSON.parse(store) : [DEFAULT_ENDPOINT]
+  const endpoint = parseInt(localStorage.getItem("endpoint") || "0" , 10)
   return { endpoints, endpoint }
 }
 
@@ -66,17 +66,14 @@ const mutations: MutationTree<AppState> = {
     state.initialized = trigger
   },
   [APP.SELECT_ENDPOINT](state, props: { name: string }) {
-    state.endpoint = props.name
-    localStorage.setItem("endpoint", props.name)
+    const index = state.endpoints.reduce((a, v, i) => v === props.name ? i : a, 0)
+    state.endpoint = index
+    localStorage.setItem("endpoint", index.toString(10))
   },
-  [APP.ADD_LOCATION](state, props: { name: string, location: string }) {
-    state.endpoints[props.name] = props.location
+  [APP.ADD_LOCATION](state, props: { url: string }) {
+    if (state.endpoints.includes(props.url)) return
+    state.endpoints.push(props.url)
     localStorage.setItem("endpoints", JSON.stringify(state.endpoints))
-  },
-  [APP.DEL_LOCATION](state, props: { name: string }) {
-    if (props.name === DEFAULT_ENDPOINT) throw new Error("can not delete default location")
-    delete state.endpoints[name]
-    if (state.endpoint === name) state.endpoint = DEFAULT_ENDPOINT
   },
   [APP.MESSAGE](state, { type, content }) {
     state.message = { type, content }

@@ -1,45 +1,55 @@
 <template>
-  <div>
-    <form class="login" @submit.prevent>
-      <div>
-        <label for="createEndpoint">create api endpoint?</label>
-        <input type="checkbox" v-model="createEndpoint" id="createEndpoint">
-      </div>
-      <span v-if="createEndpoint">
-        <div>
-          <label for="newEndpointName">Name:</label>
-          <input type="text" v-model="newEndpointName" id="newEndpointName">
-        </div>
-        <div>
-          <label for="newEndpointLocation">Endpoint:</label>
-          <input type="text" v-model="newEndpointLocation" id="newEndpointLocation">
-        </div>
-        <div>
-          <input type="button" value="Add Endpoint" @click="addEndpoint" />
-        </div>
-      </span>
-      <div>
-        <label for="selectedEndpoint">Endpoint:</label>
-        <select :value="selectedEndpoint" id="selectedEndpoint" @input="updateEndpoint">
-          <option
-            v-for="(value, name) in endpoints"
-            v-bind:value="name"
-            v-bind:key="name"
-          >
-            {{`${name} - ${value}`}}
-          </option>
-        </select>
-      </div>
-      <div>
-        <label for="username">Username:</label>
-        <input type="text" autofocus v-model="username" id="username">
-      </div>
-      <div>
-        <label for="password">Password:</label>
-        <input type="password" v-model="password" id="password">
-      </div>
-      <input type="submit" @click="login" value="Send">
-    </form>
+  <div class="p-grid p-jc-center">
+    <div class="p-sm-12 p-md-6 p-lg-4">
+      <Card>
+        <template #content>
+          <form @submit.prevent>
+            <div class="p-fluid">
+              <div class="p-field">
+                <label for="selectedEndpoint">Endpoint</label>
+                <div class="p-inputgroup">
+                  <Dropdown
+                    placeholder="Select Endpoint"
+                    :options="endpoints"
+                    v-model="selectedEndpoint"
+                    id="selectedEndpoint"
+                  />
+                  <Dialog position="top" :visible="createEndpoint">
+                    <template #header>
+                      Add Endpoint
+                    </template>
+                    <div class="p-fluid">
+                      <div class="p-field">
+                        <label for="newEndpoint">URL to Endpoint</label>
+                        <div class="p-inputgroup">
+                          <InputText id="newEndpoint" v-model="newEndpoint" />
+                        </div>
+                      </div>
+                    </div>
+                    <template #footer>
+                      <Button icon="pi pi-times" label="Cancel" @click="createEndpoint = false" />
+                      <Button icon="pi pi-check" label="Add" @click="addEndpoint()" autofocus/>
+                    </template>
+                  </Dialog>
+                  <Button icon="pi pi-plus" @click="createEndpoint = true" class="p-button-info"/>
+                </div>
+              </div>
+              <div class="p-field">
+                <label for="username">Username</label>
+                <InputText id="username" v-model="username" />
+              </div>
+              <div class="p-field">
+                <label for="password">Password</label>
+                <InputText type="password" id="password" v-model="password" />
+              </div>
+            </div>
+          </form>
+        </template>
+        <template #footer>
+          <Button label="Login" @click="login()" autofocus/>
+        </template>
+      </Card>
+    </div>
   </div>
 </template>
 
@@ -52,8 +62,7 @@ import { APP } from "../../services/store/modules/app"
 export default defineComponent({
   data() {
     return {
-      newEndpointLocation: "",
-      newEndpointName: "",
+      newEndpoint: "",
       createEndpoint: false,
       username: "admin",
       password: ""
@@ -61,12 +70,25 @@ export default defineComponent({
   },
   computed: {
     endpoints: () => store.state.app.endpoints,
-    selectedEndpoint: () => store.state.app.endpoint
+    selectedEndpoint: {
+      get() {
+        console.log({
+          endpoint: store.state.app.endpoint,
+          endpoints: store.state.app.endpoints,
+          value: store.state.app.endpoints[store.state.app.endpoint]
+        })
+        return store.state.app.endpoints[store.state.app.endpoint]
+      },
+      set(name) {
+        console.log("selectedEndpoint", { name })
+        store.commit(APP.SELECT_ENDPOINT, { name })
+      }
+    },
   },
   methods: {
     /** checks if the endpoint provided is a valid endpoint */
     async testEndpoint() {
-      const res = await fetch(this.getApiLocation(this.newEndpointLocation))
+      const res = await fetch(this.getApiLocation(this.newEndpoint))
       const data = await res.json()
       if (typeof data !== "object" || data.name !== "VeniceRCON-api")
         throw new Error("invalid response received from endpoint")
@@ -77,19 +99,10 @@ export default defineComponent({
       if (endpoint.endsWith("/api")) return endpoint
       return `${endpoint}/api`
     },
-    updateEndpoint(event: InputEvent) {
-      if (!event.target) return
-      //@ts-ignore
-      store.commit(APP.SELECT_ENDPOINT, { name: event.target.value })
-    },
     async addEndpoint() {
       await this.testEndpoint()
-      store.dispatch(APP.ADD_LOCATION, {
-        name: this.newEndpointName,
-        location: this.newEndpointLocation
-      })
-      this.newEndpointLocation = ""
-      this.newEndpointName = ""
+      store.dispatch(APP.ADD_LOCATION, { url: this.newEndpoint })
+      this.newEndpoint = ""
       this.createEndpoint = false
     },
     async login() {

@@ -12,18 +12,10 @@
   <template #subtitle>
     <p>{{instance.serverinfo.address}}</p>
   </template>
-  <template #content>
-    <p>
-      <i class="pi pi-users pi-sm"></i> 
-      {{instance.serverinfo.slots}}/{{instance.serverinfo.totalSlots}}
-    </p>
-    <p>
-      <i class="pi pi-map-marker"></i> 
-      {{mapName(instance.serverinfo.map)}}
-    </p>
-    <p>
-      <i class="pi pi-star-o"></i> 
-      {{mapName(instance.serverinfo.mode)}}
+  <template #content>    
+    <p v-for="data in info" v-bind:key="data.icon">
+      <i :class="data.icon"></i> 
+      {{data.content}}
     </p>
   </template>
   <template #footer>
@@ -123,6 +115,29 @@ export default defineComponent({
     },
     mapName() {
       return translate
+    },
+    info(): {icon: string, content: string}[] {
+      const { serverinfo } = this.instance
+      return [{
+        icon: "pi pi-cloud",
+        content: this.instance.version === "BF3" ? "Battlefield 3" : "Venice Unleashed"
+      }, {
+        icon: "pi pi-users pi-sm",
+        content: `${serverinfo.slots}/${serverinfo.totalSlots}`
+      }, {
+        icon: "pi pi-ticket",
+        content: (
+          Array.isArray(serverinfo.scores) && serverinfo.scores.length > 0 ?
+          serverinfo.scores.join("/") :
+          "???/???"
+        )
+      }, {
+        icon: "pi pi-map-marker",
+        content: this.mapName(serverinfo.map)
+      }, {
+        icon: "pi pi-star-o",
+        content: this.mapName(serverinfo.mode)
+      }]
     }
   },
   methods: {

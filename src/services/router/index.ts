@@ -45,7 +45,7 @@ router.beforeEach(async (to, from, next) => {
 
 function waitInitialized() {
   if (store.state.app.initialized) return Promise.resolve()
-  return new Promise(fulfill => {
+  return new Promise<void>(fulfill => {
     if (store.state.app.initialized) return fulfill()
     const unsubscribe = store.watch(state => state.app.initialized, init => {
       if (!init) return

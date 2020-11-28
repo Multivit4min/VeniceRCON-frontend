@@ -102,7 +102,13 @@ export default defineComponent({
       return this.instance.id
     },
     mapThumbnail(): string {
-      return require(`../assets/images/maps/${this.mapId.toLowerCase()}.jpg`)
+      if (this.mapId === "") return require("../assets/images/maps/mp_001.jpg")
+      try {
+        return require(`../assets/images/maps/${this.mapId.toLowerCase()}.jpg`)
+      } catch (e) {
+        console.warn(e)
+        return require("../assets/images/maps/mp_001.jpg")
+      }
     },
     currentState() {
       return store.getters.getInstanceState(this.instanceId)
@@ -111,7 +117,7 @@ export default defineComponent({
       return (scope: string) => store.getters.hasPermission(this.instanceId, scope)
     },
     mapId(): string {
-      return this.instance.serverinfo.map
+      return this.instance.serverinfo.map || ""
     },
     mapName() {
       return translate

@@ -10,7 +10,7 @@ export const manager = new Manager(store.getters.apiEndpointUrl, {
   transports: ["websocket"]
 })
 
-export let socket: Socket = manager.socket(store.getters.apiEndpointUrl, {
+export let socket: Socket = manager.socket("/", {
   auth: { auth_token: store.state.auth.token }
 })
 

@@ -10,9 +10,7 @@ export const manager = new Manager(store.getters.apiEndpointUrl, {
   transports: ["websocket"]
 })
 
-export let socket: Socket = manager.socket("/", {
-  auth: { auth_token: store.state.auth.token }
-})
+export let socket: Socket
 
 store.watch((state, getters) => getters.loggedIn, loggedIn => {
   if (loggedIn) return connect()
@@ -26,9 +24,8 @@ function disconnect() {
 
 /** connects to the socket */
 function connect() {
-  socket = manager.socket("/", {
-    auth: { auth_token: store.state.auth.token },
-  })
+  const auth_token = store.state.auth.token
+  socket = manager.socket("/", { auth: { auth_token }})
   return registerEvents(socket.connect())
 }
 

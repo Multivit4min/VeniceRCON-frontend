@@ -24,7 +24,8 @@ export type AppState = {
 
 function getEndpoints(): Pick<AppState, "endpoint"|"endpoints"> {
   const store = localStorage.getItem("endpoints")
-  const endpoints = store ? JSON.parse(store) : [DEFAULT_ENDPOINT]
+  let endpoints = store ? JSON.parse(store) : [DEFAULT_ENDPOINT]
+  if (!Array.isArray(endpoints)) endpoints = [DEFAULT_ENDPOINT]
   const endpoint = parseInt(localStorage.getItem("endpoint") || "0" , 10)
   return { endpoints, endpoint }
 }
@@ -71,8 +72,9 @@ const mutations: MutationTree<AppState> = {
     localStorage.setItem("endpoint", index.toString(10))
   },
   [APP.ADD_LOCATION](state, props: { url: string }) {
+    console.log(state, state.endpoints)
     if (state.endpoints.includes(props.url)) return
-    state.endpoints.push(props.url)
+    state.endpoint = state.endpoints.push(props.url) - 1
     localStorage.setItem("endpoints", JSON.stringify(state.endpoints))
   },
   [APP.MESSAGE](state, { type, content }) {

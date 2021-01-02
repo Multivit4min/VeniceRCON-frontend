@@ -1,16 +1,16 @@
-import { login, whoami, WhoamiResponse } from "../../api"
-import { Module, ActionTree, MutationTree, GetterTree } from "vuex"
+import api, { VeniceRcon } from "../../api"
+import { Module, MutationTree, GetterTree } from "vuex"
 import { rootState } from "../"
 
 export enum AUTH {
-  LOGIN = "AUTH_LOGIN",
-  WHOAMI = "AUTH_WHOAMI",
+  UPDATE_TOKEN = "AUTH_UPDATE_TOKEN",
+  UPDATE_WHOAMI = "AUTH_UPDATE_WHOAMI",
   LOGOUT = "AUTH_LOGOUT"
 }
 
 export type AuthState = {
   token: string|null
-  whoami: WhoamiResponse|null
+  whoami: VeniceRcon.WhoamiResponse|null
 }
 
 function defaultState(): AuthState {
@@ -20,30 +20,12 @@ function defaultState(): AuthState {
   }
 }
 
-
-const actions: ActionTree<AuthState, rootState> = {
-  /** tries to login to a different account */
-  async [AUTH.LOGIN]({ dispatch, commit }, payload) {
-    const { token } = await login(payload)
-    commit("updateToken", token)
-    await dispatch(AUTH.WHOAMI)
-  },
-  /** retrieves informations about the currently used user */
-  async [AUTH.WHOAMI](context) {
-    context.commit("updateWhoami", await whoami())
-  },
-  /** resets the store */
-  [AUTH.LOGOUT]({ commit }) {
-    commit(AUTH.LOGOUT)
-  }
-}
-
 const mutations: MutationTree<AuthState> = {
-  updateToken(state, token: string) {
+  [AUTH.UPDATE_TOKEN](state, token: string) {
     localStorage.setItem("jwt", token)
     state.token = token
   },
-  updateWhoami(state, response: WhoamiResponse) {
+  [AUTH.UPDATE_WHOAMI](state, response: VeniceRcon.WhoamiResponse) {
     state.whoami = response
   },
   [AUTH.LOGOUT](state) {
@@ -65,7 +47,6 @@ const getters: GetterTree<AuthState, rootState> = {
 
 const store: Module<AuthState, rootState> = {
   state: defaultState(),
-  actions,
   mutations,
   getters
 }

@@ -7,10 +7,10 @@
     />
   </template>
   <template #title>
-    {{instance.serverinfo.name}}
+    <p class="noWrap">{{instance.name}}</p>
   </template>
   <template #subtitle>
-    <p>{{instance.serverinfo.address}}</p>
+    <p>{{instance.host}}:{{instance.port}}</p>
   </template>
   <template #content>    
     <p v-for="data in info" v-bind:key="data.icon">
@@ -73,10 +73,16 @@
 </Card>
 </template>
 
+<style scoped>
+  #noWrap {
+    overflow: hidden;
+    white-space: nowrap;
+  }
+</style>
 
 <script lang="ts">
 import { PropType, defineComponent } from "vue"
-import { deleteInstance, start, stop } from "../services/api/instance"
+import api from "../services/api"
 import store from "../services/store"
 import { Instance } from "../types/Instance"
 import { translate } from "../services/battlefield/map"
@@ -149,14 +155,14 @@ export default defineComponent({
   methods: {
     async stop(confirm: boolean) {
       this.confirmStop = false
-      if (confirm) await stop(this.instanceId)
+      if (confirm) await api.stopInstance(this.instanceId)
     },
     start() {
-      return start(this.instanceId)
+      return api.startInstance(this.instanceId)
     },
     removeInstance(confirm: boolean) {
       this.confirmDelete = false
-      if (confirm) deleteInstance(this.instanceId)
+      if (confirm) api.deleteInstance(this.instanceId)
     }
   }
 })

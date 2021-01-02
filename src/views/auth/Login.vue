@@ -56,8 +56,8 @@
 <script lang="ts">
 import { defineComponent } from "vue"
 import store from "../../services/store"
-import { AUTH } from "../../services/store/modules/auth"
 import { APP } from "../../services/store/modules/app"
+import api from "../../services/api"
 
 export default defineComponent({
   data() {
@@ -107,10 +107,7 @@ export default defineComponent({
     },
     async login() {
       try {
-        await store.dispatch(AUTH.LOGIN, {
-          username: this.username,
-          password: this.password
-        })
+        await api.login(this.username, this.password)
         await this.$router.push("/dashboard")
       } catch (e) {
         //@ts-ignore

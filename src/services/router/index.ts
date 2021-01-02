@@ -7,17 +7,19 @@ import Login from "../../views/auth/Login.vue"
 import store from "../store"
 
 const routes: RouteRecordRaw[] = [{
-  path: "/:instanceId(\\d+)",
-  name: "Instance" ,
-  component: Instance,
-  children: [
-    
-  ]
+  path: "/",
+  name: "Home",
+  component: Main,
+  children: [{
+    path: "/:instanceId(\\d+)",
+    name: "Instance" ,
+    component: Instance
   }, {
     path: "/dashboard",
     name: "Dashboard",
     component: Dashboard
-  }, {
+  }]
+}, {
     path: "/login",
     name: "Login",
     component: Login,
@@ -27,7 +29,7 @@ const routes: RouteRecordRaw[] = [{
     component: Logout
   }, {
     path: "/",
-    redirect: { path: "/dashboard" }
+    redirect: "Home"
   }
 ]
 

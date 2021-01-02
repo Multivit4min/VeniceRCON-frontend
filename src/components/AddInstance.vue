@@ -32,7 +32,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue"
 import Dialog from "primevue/dialog"
-import { createInstance } from "../services/api/instance"
+import api from "../services/api"
 import Message from "primevue/message"
 
 const initialState = () => ({
@@ -76,7 +76,7 @@ export default defineComponent({
       if (!this.tested) return
       this.busy = true
       try {
-        await createInstance(this.getConnectionInfo())
+        await api.createInstance(this.getConnectionInfo())
       } catch (error) {
         if (error.body && error.body.message) {
           this.error = error.body.message
@@ -91,7 +91,7 @@ export default defineComponent({
     async test() {
       this.busy = true
       try {
-        await createInstance(this.getConnectionInfo(true))
+        await api.createInstance(this.getConnectionInfo(true))
         this.tested = true
       } catch (error) {
         if (error.body && error.body.message) {

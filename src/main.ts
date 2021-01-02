@@ -2,7 +2,6 @@ import { createApp } from "vue"
 import App from "./App.vue"
 import router from "./services/router"
 import store from "./services/store"
-import "./services/socket"
 
 import PermissionCheck from "./components/PermissionCheck.vue"
 

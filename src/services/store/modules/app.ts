@@ -1,5 +1,6 @@
 import { Module, ActionTree, MutationTree, GetterTree } from "vuex"
 import type { rootState } from "../"
+import api from '../../api'
 import { AUTH } from './auth'
 
 const DEFAULT_ENDPOINT = "http://localhost:8000"
@@ -39,11 +40,10 @@ export function defaultState(): AppState {
 }
 
 const actions: ActionTree<AppState, rootState> = {
-  /** initializes the application */
   async [APP.INITIALIZE]({ dispatch, commit, rootState }) {
     if (!rootState.auth.token) return commit(APP.INITIALIZE)
     try {
-      await dispatch(AUTH.WHOAMI)
+      await api.whoami()
       commit(APP.INITIALIZE)
     } catch (e) {
       await dispatch(AUTH.LOGOUT)

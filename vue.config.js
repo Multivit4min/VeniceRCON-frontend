@@ -2,6 +2,16 @@ module.exports = {
   publicPath: process.env.GITHUB_ACTIONS ?
     `/${process.env.GITHUB_REPOSITORY.split("/")[1]}` :
     "/",
+  configureWebpack: {
+    devServer: {
+      watchOptions: {
+        ignored: ["node_modules"],
+        aggregateTimeout: 300,
+        poll: 1500
+      },
+      public: "ui.multivitamin.wtf"
+    }
+  },
   devServer: {
     disableHostCheck: true,
     proxy: {

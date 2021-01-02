@@ -5,7 +5,7 @@ import { Instance } from "../../types/Instance"
 //@ts-expect-error 
 import { useToast } from "primevue/usetoast"
 import { defineComponent } from 'vue'
-import api from '../api'
+import api, {VeniceRcon} from '../api'
 
 const DEFAULT_OPTIONS = {
   autoConnect: false,
@@ -18,6 +18,7 @@ export default defineComponent({
   data() {
     return {
       manager: new Manager(store.getters.apiEndpointUrl, DEFAULT_OPTIONS),
+      socket: undefined as (Socket|undefined), 
       toast: useToast(),
       unwatch: undefined as undefined|(() => void)
     }
@@ -34,14 +35,16 @@ export default defineComponent({
   },
   methods: {
     connect() {
+      if (this.socket && this.socket.connected) this.disconnect()
       this.manager = new Manager(store.getters.apiEndpointUrl, DEFAULT_OPTIONS)
       const auth_token = store.state.auth.token
-      socket = this.manager.socket("/", { auth: { auth_token }})
-      this.registerEvents(socket)
-      socket.connect()
+      this.socket = this.manager.socket("/", { auth: { auth_token }})
+      this.registerEvents(this.socket)
+      this.socket.connect()
     },
     disconnect() {
-      socket.disconnect()
+      if (!this.socket) return
+      this.socket.disconnect()
     },
     reconnect() {
       this.disconnect()
@@ -61,15 +64,18 @@ export default defineComponent({
         store.dispatch(INSTANCE.ADD_CHAT, { messages: event.messages })
       })      
       socket.on("INSTANCE#KILL", (event: KillEvent) => {
-        console.log("INSTANCE#KILL", event.kills)
+        //console.log("INSTANCE#KILL", event.kills)
       })      
       socket.on("INSTANCE#LOG", (event: InstanceLogEvent) => {
-        console.log("INSTANCE#LOG", event)
+        //console.log("INSTANCE#LOG", event)
         event.messages.forEach(({ level, instanceId, message }) => {
+          const instance = store.getters.getInstance(instanceId) as (VeniceRcon.Instance|undefined)
+          let summary = `from ${instanceId}`
+          if (instance ) summary = `${instance.name.length <= 35 ? instance.name : `${instance.name.substr(0, 32)}...`}`
           this.toast.add({
             severity: level,
             detail: message,
-            summary: `from ${instanceId}`,
+            summary,
             life: 4000
           })
         })
@@ -82,8 +88,6 @@ export default defineComponent({
     }
   }
 })
-
-export let socket: Socket
 
 
 

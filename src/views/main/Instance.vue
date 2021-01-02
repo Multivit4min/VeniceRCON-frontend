@@ -1,6 +1,5 @@
 <template>
   <div>
-    <AppMenu />
     <h3>Instance</h3>
     <pre>{{JSON.stringify(instance, null, 2)}}</pre>
   </div>
@@ -10,7 +9,6 @@
 import { defineComponent } from "vue"
 import store from "../../services/store"
 import router from "../../services/router"
-import AppMenu from "../../components/AppMenu.vue"
 
 export default defineComponent({
   computed: {
@@ -25,8 +23,6 @@ export default defineComponent({
         .find(instance => instance.id === this.instanceId)
     }
   },
-  components: {
-    AppMenu
-  }
+  components: {}
 })
 </script>

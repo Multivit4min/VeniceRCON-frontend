@@ -118,6 +118,7 @@ const getters: GetterTree<InstanceState, rootState> = {
         case 3: return "Disconnecting"
         case 4: return "Disconnected"
         case 5: return "Reconnecting"
+        case 6: return "Reconnecting failed"
       }
     }
   }

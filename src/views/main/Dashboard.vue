@@ -8,7 +8,7 @@
     </PermissionCheck>
     <div class="p-grid">
       <div
-        class="p-md-4 p-lg-3"
+        class="p-md-6 p-lg-4"
         v-for="instance in instances"
         v-bind:key="instance.id"
       >

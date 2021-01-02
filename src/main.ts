@@ -12,6 +12,7 @@ import "primeicons/primeicons.css"
 
 
 import ToastService from "primevue/toastservice"
+import ConfirmationService from "primevue/confirmationservice"
 import Toast from "primevue/toast"
 import Card from "primevue/card"
 import Button from "primevue/button"
@@ -20,21 +21,24 @@ import InputNumber from "primevue/inputnumber"
 import InputText from "primevue/inputtext"
 import Dropdown from "primevue/dropdown"
 import Dialog from "primevue/dialog"
+import Menu from "primevue/menu"
+import Toolbar from "primevue/toolbar"
+
 
 export const app = createApp(App)
-
-app.component("Toast", Toast)
-app.component("Card", Card)
-app.component("Button", Button)
-app.component("SplitButton", SplitButton)
-app.component("InputNumber", InputNumber)
-app.component("InputText", InputText)
-app.component("Dropdown", Dropdown)
-app.component("Dialog", Dialog)
-app.component("PermissionCheck", PermissionCheck)
-
-app
+  .component("Toast", Toast)
+  .component("Card", Card)
+  .component("Button", Button)
+  .component("SplitButton", SplitButton)
+  .component("InputNumber", InputNumber)
+  .component("InputText", InputText)
+  .component("Dropdown", Dropdown)
+  .component("Dialog", Dialog)
+  .component("Menu", Menu)
+  .component("Toolbar", Toolbar)
+  .component("PermissionCheck", PermissionCheck)
   .use(store)
   .use(router)
   .use(ToastService)
+  .use(ConfirmationService)
   .mount("#app")

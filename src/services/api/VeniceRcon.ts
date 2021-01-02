@@ -646,6 +646,7 @@ export namespace VeniceRcon {
     id: number
     host: string
     port: number
+    name: string
     state: InstanceState
     serverinfo: ServerInfo
     players: Record<string, Player>

@@ -23,23 +23,18 @@
         <Button icon="pi pi-check" label="Select" />
       </router-link>
       <PermissionCheck :instance="instanceId" scopes="INSTANCE#UPDATE">
-        <ConfirmAction
-          :open="confirmStop"
-          message="Are you sure that you want to stop the Instance?"
-          :onClose="stop"
-        />
         <Button
+          @click="confirmStop($event)"
           v-if="instance.state === 2"
           icon="pi pi-power-off"
-          label="Stop"
           class="p-button-danger"
           style="margin-left: .5em"
-          @click="confirmStop = true"
+          label="Stop"
         />
       </PermissionCheck>
       <PermissionCheck :instance="instanceId" scopes="INSTANCE#UPDATE">
         <Button
-          v-if="instance.state === 4"
+          v-if="[4, 6].includes(instance.state)"
           icon="pi pi-play"
           label="Start"
           class="p-button-success"
@@ -49,7 +44,7 @@
       </PermissionCheck>
       <PermissionCheck :instance="instanceId" scopes="INSTANCE#UPDATE">
         <Button
-          v-if="![2, 4].includes(instance.state)"
+          v-if="![2, 4, 6].includes(instance.state)"
           :label="currentState"
           disabled
           class="p-button-warning"
@@ -57,14 +52,9 @@
         />
       </PermissionCheck>
       <PermissionCheck :instance="instanceId" scopes="INSTANCE#DELETE">
-        <ConfirmAction
-          :open="confirmDelete"
-          :message="`Delete '${instance.serverinfo.name}'?`"
-          :onClose="removeInstance"
-        />
         <Button
+          @click="confirmRemove($event)"
           icon="pi pi-trash"
-          @click="confirmDelete = true"
           class="p-button-danger"
           style="margin-left: .5em"
         />
@@ -74,7 +64,7 @@
 </template>
 
 <style scoped>
-  #noWrap {
+  .noWrap {
     overflow: hidden;
     white-space: nowrap;
   }
@@ -86,7 +76,7 @@ import api from "../services/api"
 import store from "../services/store"
 import { Instance } from "../types/Instance"
 import { translate } from "../services/battlefield/map"
-import ConfirmAction from "../components/ConfirmAction.vue"
+import { useConfirm } from "primevue/useConfirm"
 
 export default defineComponent({
   props: {
@@ -97,12 +87,8 @@ export default defineComponent({
     }
   },
   data: () => ({
-    confirmStop: false,
-    confirmDelete: false
+    confirm: useConfirm()
   }),
-  components: {
-    ConfirmAction
-  },
   computed: {
     instanceId(): number {
       return this.instance.id
@@ -145,24 +131,40 @@ export default defineComponent({
         )
       }, {
         icon: "pi pi-map-marker",
-        content: this.mapName(serverinfo.map)
+        content: this.mapName(serverinfo.map) || "?"
       }, {
         icon: "pi pi-star-o",
-        content: this.mapName(serverinfo.mode)
+        content: this.mapName(serverinfo.mode) || "?"
       }]
     }
   },
   methods: {
-    async stop(confirm: boolean) {
-      this.confirmStop = false
-      if (confirm) await api.stopInstance(this.instanceId)
-    },
     start() {
       return api.startInstance(this.instanceId)
     },
-    removeInstance(confirm: boolean) {
-      this.confirmDelete = false
-      if (confirm) api.deleteInstance(this.instanceId)
+    confirmRemove(event: MouseEvent) {
+      this.confirm.require({
+        //@ts-expect-error
+        target: event.currentTarget,
+        message: `Confirm Delete`,
+        icon: "pi pi-exclamation-triangle",
+        accept: () => api.stopInstance(this.instanceId),
+        reject: () => null,
+        rejectLabel: "Cancel",
+        acceptLabel: "Delete"
+      })
+    },
+    confirmStop(event: MouseEvent) {
+      this.confirm.require({
+        //@ts-expect-error
+        target: event.currentTarget,
+        message: `Confirm Stop`,
+        icon: "pi pi-exclamation-triangle",
+        accept: () => api.stopInstance(this.instanceId),
+        reject: () => null,
+        rejectLabel: "Cancel",
+        acceptLabel: "Stop"
+      })
     }
   }
 })

@@ -3,6 +3,9 @@ import { rootState } from "../"
 import { ChatMessage, ConsoleEvent } from "../../socket"
 import { Instance } from "../../../types/Instance"
 import { AUTH } from "./auth"
+import router from '../../router'
+import { VeniceRcon } from '../../api'
+import { reactive } from 'vue'
 
 const MESSAGE_LIMIT = 100
 const KILL_LIMIT = 100
@@ -18,7 +21,7 @@ export enum INSTANCE {
 }
 
 export type InstanceState = {
-  instances: Instance[],
+  instances: VeniceRcon.Instances,
   messages: { id: number, messages: ChatMessage[] }[]
   console: { id: number, messages: Pick<ConsoleEvent, "type"|"words">[] }[]
 }
@@ -74,7 +77,7 @@ const mutations: MutationTree<InstanceState> = {
           obj[key] = change[1]
         }
       } else {
-        if (typeof obj[key] !== "object") Object.assign(obj, { [key]: {} })
+        if (typeof obj[key] !== "object") Object.assign(obj, { [key]: reactive({}) })
         obj = obj[key]
       }
     })
@@ -100,6 +103,11 @@ const mutations: MutationTree<InstanceState> = {
 }
 
 const getters: GetterTree<InstanceState, rootState> = {
+  selectedInstance({ instances }) {
+    const id = parseInt(router.currentRoute.value.params.instanceId as any, 10)
+    if (isNaN(id)) return undefined
+    return instances.find(instance => instance.id === id)
+  },
   getInstance(state) {
     return (id: number) => {
       const instance = state.instances.find(instance => instance.id === id)

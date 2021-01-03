@@ -23,19 +23,29 @@ import Dropdown from "primevue/dropdown"
 import Dialog from "primevue/dialog"
 import Menu from "primevue/menu"
 import Toolbar from "primevue/toolbar"
+import ContextMenu from "primevue/contextmenu"
+import Column from "primevue/column"
+import DataTable from "primevue/datatable"
+import Checkbox from "primevue/checkbox"
+import RadioButton from "primevue/radiobutton"
 
 
 export const app = createApp(App)
   .component("Toast", Toast)
   .component("Card", Card)
+  .component("Menu", Menu)
   .component("Button", Button)
+  .component("Dialog", Dialog)
+  .component("Column", Column)
+  .component("Toolbar", Toolbar)
+  .component("Checkbox", Checkbox)
+  .component("Dropdown", Dropdown)
+  .component("DataTable", DataTable)
+  .component("InputText", InputText)
   .component("SplitButton", SplitButton)
   .component("InputNumber", InputNumber)
-  .component("InputText", InputText)
-  .component("Dropdown", Dropdown)
-  .component("Dialog", Dialog)
-  .component("Menu", Menu)
-  .component("Toolbar", Toolbar)
+  .component("ContextMenu", ContextMenu)
+  .component("RadioButton", RadioButton)
   .component("PermissionCheck", PermissionCheck)
   .use(store)
   .use(router)

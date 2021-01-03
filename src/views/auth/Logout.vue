@@ -7,8 +7,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue"
-import store from "../../services/store"
-import { AUTH } from "../../services/store/modules/auth"
+import api from "../../services/api"
 
 export default defineComponent({
   async mounted() {
@@ -16,7 +15,7 @@ export default defineComponent({
   },
   methods: {
     async logout() {
-      await store.dispatch(AUTH.LOGOUT)
+      await api.logout()
     }
   }
 })

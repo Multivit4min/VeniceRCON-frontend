@@ -35,6 +35,7 @@ export default defineComponent({
   },
   methods: {
     connect() {
+      console.log("socket connect")
       if (this.socket && this.socket.connected) this.disconnect()
       this.manager = new Manager(store.getters.apiEndpointUrl, DEFAULT_OPTIONS)
       const auth_token = store.state.auth.token
@@ -43,6 +44,7 @@ export default defineComponent({
       this.socket.connect()
     },
     disconnect() {
+      console.log("socket disconnect")
       if (!this.socket) return
       this.socket.disconnect()
     },

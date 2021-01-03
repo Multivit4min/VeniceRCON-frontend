@@ -14,7 +14,11 @@ export class Api {
   }
 
   updateToken(token: string|null) {
-    store.commit(AUTH.UPDATE_TOKEN, token)
+    if (token === null) {
+      store.commit(AUTH.LOGOUT)
+    } else {
+      store.commit(AUTH.UPDATE_TOKEN, token)
+    }
     return this
   }
 

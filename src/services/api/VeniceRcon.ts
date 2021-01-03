@@ -9,12 +9,13 @@ export class VeniceRcon {
     this.api = new Api()
   }
 
-  login(username: string, password: string) {
-    return this.api.post<VeniceRcon.TokenResponse>()
+  async login(username: string, password: string) {
+    const { token } = await this.api.post<VeniceRcon.TokenResponse>()
       .path(`/auth/login`)
       .body({ username, password })
-      .intercept((res, { token }) => this.api.updateToken(token))
       .send()
+    this.api.updateToken(token)
+    return this.whoami()
   }
 
   useInviteToken(token: string) {
@@ -43,9 +44,11 @@ export class VeniceRcon {
   }
 
   async whoami() {
-    const response = await this.api.get<VeniceRcon.WhoamiResponse>().path("/auth/whoami").send()
-    store.commit(AUTH.UPDATE_WHOAMI, response)
-    return response
+    return this.api
+      .get<VeniceRcon.WhoamiResponse>()
+      .path("/auth/whoami")
+      .intercept((res, whoami) => store.commit(AUTH.UPDATE_WHOAMI, whoami))
+      .send()
   }
 
   updateSelf(currentPassword: string, props: VeniceRcon.UpdateUserProps) {
@@ -682,7 +685,18 @@ export namespace VeniceRcon {
   }
 
   export type Player = {
-    //@todo
+    name: string
+    guid: string
+    teamId: number
+    squadId: number
+    kills: number
+    deaths: number
+    score: number
+    rank: string
+    ping: number
+    spectator: boolean
+    playerGuid?: string
+    ip: string
   }
 
   export type MapInfo = {

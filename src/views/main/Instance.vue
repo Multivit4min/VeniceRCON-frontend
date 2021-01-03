@@ -1,26 +1,24 @@
 <template>
-  <div>
-    <h3>Instance</h3>
-    <pre>{{JSON.stringify(instance, null, 2)}}</pre>
+  <div v-if="instance">
+    <router-view />
+    <pre v-if="store.state.app.debug">{{JSON.stringify(instance, null, 2)}}</pre>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue"
-import store from "../../services/store"
-import router from "../../services/router"
+import { useStore } from "vuex"
+import { rootState } from "../../services/store"
 
 export default defineComponent({
+  data() {
+    return {
+      store: useStore<rootState>()
+    }
+  },
   computed: {
-    instanceId() {
-      const id = router.currentRoute.value.params.instanceId
-      if (typeof id !== "string") return 0
-      return parseInt(id, 10)
-    },
-    instance() {
-      return store.state.instances.instances
-        //@ts-ignore
-        .find(instance => instance.id === this.instanceId)
+    instance(props) {
+      return props.store.getters.selectedInstance
     }
   },
   components: {}

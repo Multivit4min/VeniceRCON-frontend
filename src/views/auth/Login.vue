@@ -58,6 +58,8 @@ import { defineComponent } from "vue"
 import store from "../../services/store"
 import { APP } from "../../services/store/modules/app"
 import api from "../../services/api"
+//@ts-expect-error
+import { useToast } from "primevue/usetoast"
 
 export default defineComponent({
   data() {
@@ -65,22 +67,17 @@ export default defineComponent({
       newEndpoint: "",
       createEndpoint: false,
       username: "admin",
-      password: ""
+      password: "",
+      toast: useToast()
     }
   },
   computed: {
     endpoints: () => store.state.app.endpoints,
     selectedEndpoint: {
       get() {
-        console.log({
-          endpoint: store.state.app.endpoint,
-          endpoints: store.state.app.endpoints,
-          value: store.state.app.endpoints[store.state.app.endpoint]
-        })
         return store.state.app.endpoints[store.state.app.endpoint]
       },
       set(name) {
-        console.log("selectedEndpoint", { name })
         store.commit(APP.SELECT_ENDPOINT, { name })
       }
     },
@@ -110,8 +107,7 @@ export default defineComponent({
         await api.login(this.username, this.password)
         await this.$router.push("/dashboard")
       } catch (e) {
-        //@ts-ignore
-        this.$toast.add({
+        this.toast.add({
           severity: "error",
           detail: "check username and password",
           summary: "login failed",

@@ -11,6 +11,12 @@
   </div>
 </template>
 
+<style>
+  html {
+    font-family: "Roboto";
+  }
+</style>
+
 <script lang="ts">
 import { defineComponent } from "vue"
 import store from "./services/store"

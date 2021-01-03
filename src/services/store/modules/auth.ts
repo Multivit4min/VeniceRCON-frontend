@@ -31,6 +31,7 @@ const mutations: MutationTree<AuthState> = {
   [AUTH.LOGOUT](state) {
     localStorage.removeItem("jwt")
     Object.assign(state, defaultState())
+    console.log(state)
   }
 }
 

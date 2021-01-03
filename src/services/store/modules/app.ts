@@ -10,13 +10,15 @@ export enum APP {
   ADD_LOCATION = "APP_ADD_LOCATION",
   DEL_LOCATION = "APP_DEL_LOCATION",
   SELECT_ENDPOINT = "APP_SELECT_ENDPOINT",
-  MESSAGE = "APP_MESSAGE"
+  MESSAGE = "APP_MESSAGE",
+  DEBUG = "APP_DEBUG"
 }
 
 export type AppState = {
   initialized: boolean
   endpoints: string[]
   endpoint: number
+  debug: boolean
   message: {
     type: string
     content: string
@@ -34,6 +36,7 @@ function getEndpoints(): Pick<AppState, "endpoint"|"endpoints"> {
 export function defaultState(): AppState {
   return {
     initialized: false,
+    debug: false,
     ...getEndpoints(),
     message: null
   }
@@ -79,6 +82,9 @@ const mutations: MutationTree<AppState> = {
   },
   [APP.MESSAGE](state, { type, content }) {
     state.message = { type, content }
+  },
+  [APP.DEBUG](state, set) {
+    state.debug = set
   }
 }
 

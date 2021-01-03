@@ -38,12 +38,12 @@
     bottom: 0;
     top: 0px;
     position: fixed;
-    width: 250px;
+    width: 300px;
     padding: 0em;
     padding-top: 60px;
   }
   .content {
-    padding-left: 260px;
+    padding-left: 310px;
   }
 </style>>
 

@@ -7,16 +7,16 @@
     />
   </template>
   <template #title>
-    <p class="noWrap">{{instance.name}}</p>
+    <label class="noWrap">{{instance.name}}</label>
   </template>
   <template #subtitle>
-    <p>{{instance.host}}:{{instance.port}}</p>
+    {{instance.host}}:{{instance.port}} ({{instance.id}})
   </template>
   <template #content>    
-    <p v-for="data in info" v-bind:key="data.icon">
-      <i :class="data.icon"></i> 
-      {{data.content}}
-    </p>
+    <div v-for="data in info" v-bind:key="data.icon" class="text-label">
+      <i :class="data.icon"></i> {{data.content}}
+    </div>
+    <pre v-if="store.state.app.debug">{{JSON.stringify(instance, null, 2)}}</pre>
   </template>
   <template #footer>
       <router-link :to="{ name: 'Instance', params: { instanceId: instance.id }}" style="text-decoration:none" >
@@ -68,32 +68,35 @@
     overflow: hidden;
     white-space: nowrap;
   }
+  .text-label {
+    padding:2px
+  }
 </style>
 
-<script lang="ts">
-import { PropType, defineComponent } from "vue"
+<script>
+import { defineComponent } from "vue"
 import api from "../services/api"
-import store from "../services/store"
-import { Instance } from "../types/Instance"
 import { translate } from "../services/battlefield/map"
 import { useConfirm } from "primevue/useConfirm"
+import { useStore } from "vuex"
 
 export default defineComponent({
   props: {
     instance: {
-      type: Object as PropType<Instance>,
+      type: Object,
       required: true,
-      validator: (instance: Instance) => !!instance.id
+      validator: instance => !!instance.id
     }
   },
   data: () => ({
-    confirm: useConfirm()
+    confirm: useConfirm(),
+    store: useStore()
   }),
   computed: {
-    instanceId(): number {
+    instanceId() {
       return this.instance.id
     },
-    mapThumbnail(): string {
+    mapThumbnail() {
       if (this.mapId === "") return require("../assets/images/maps/mp_001.jpg")
       try {
         return require(`../assets/images/maps/${this.mapId.toLowerCase()}.jpg`)
@@ -103,18 +106,18 @@ export default defineComponent({
       }
     },
     currentState() {
-      return store.getters.getInstanceState(this.instanceId)
+      return this.store.getters.getInstanceState(this.instanceId)
     },
     hasPermission() {
-      return (scope: string) => store.getters.hasPermission(this.instanceId, scope)
+      return scope => this.store.getters.hasPermission(this.instanceId, scope)
     },
-    mapId(): string {
+    mapId() {
       return this.instance.serverinfo.map || ""
     },
     mapName() {
       return translate
     },
-    info(): {icon: string, content: string}[] {
+    info() {
       const { serverinfo } = this.instance
       return [{
         icon: "pi pi-cloud",
@@ -142,9 +145,8 @@ export default defineComponent({
     start() {
       return api.startInstance(this.instanceId)
     },
-    confirmRemove(event: MouseEvent) {
+    confirmRemove(event) {
       this.confirm.require({
-        //@ts-expect-error
         target: event.currentTarget,
         message: `Confirm Delete`,
         icon: "pi pi-exclamation-triangle",
@@ -154,9 +156,8 @@ export default defineComponent({
         acceptLabel: "Delete"
       })
     },
-    confirmStop(event: MouseEvent) {
+    confirmStop(event) {
       this.confirm.require({
-        //@ts-expect-error
         target: event.currentTarget,
         message: `Confirm Stop`,
         icon: "pi pi-exclamation-triangle",

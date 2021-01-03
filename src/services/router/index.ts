@@ -4,34 +4,43 @@ import Dashboard from "../../views/main/Dashboard.vue"
 import Instance from "../../views/main/Instance.vue"
 import Logout from "../../views/auth/Logout.vue"
 import Login from "../../views/auth/Login.vue"
+import PlayerList from "../../views/main/instance/PlayerList.vue"
+import Variables from "../../views/main/instance/Variables.vue"
 import store from "../store"
 
 const routes: RouteRecordRaw[] = [{
   path: "/",
   name: "Home",
   component: Main,
+  redirect: "/dashboard",
   children: [{
-    path: "/:instanceId(\\d+)",
-    name: "Instance" ,
-    component: Instance
+    path: "/:instanceId",
+    name: "Instance",
+    component: Instance,
+    redirect: to => `${to.fullPath}/players`,
+    children: [{
+      path: "players",
+      name: "PlayerList",
+      component: PlayerList
+    }, {
+      path: "variables",
+      name: "Variables",
+      component: Variables
+    }]
   }, {
     path: "/dashboard",
     name: "Dashboard",
     component: Dashboard
   }]
 }, {
-    path: "/login",
-    name: "Login",
-    component: Login,
-  }, {
-    path: "/logout",
-    name: "Logout",
-    component: Logout
-  }, {
-    path: "/",
-    redirect: "Home"
-  }
-]
+  path: "/login",
+  name: "Login",
+  component: Login,
+}, {
+  path: "/logout",
+  name: "Logout",
+  component: Logout
+}]
 
 const router = createRouter({
   history: createWebHashHistory(),
